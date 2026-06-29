@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="میز معاون">
+<title>میز معاون</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Vazirmatn',sans-serif;background:#0f1117;color:#e8eaf0;direction:rtl;min-height:100vh;overscroll-behavior:none}
+input,select,textarea,button{font-family:'Vazirmatn',sans-serif}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{width:100%;max-width:340px}
+.login-logo{width:64px;height:64px;background:linear-gradient(135deg,#4f8ef7,#7c5cbf);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.login-title{text-align:center;font-size:20px;font-weight:700;margin-bottom:6px}
+.login-sub{text-align:center;font-size:13px;color:#7a80a0;margin-bottom:32px}
+.login-card{background:#1a1d27;border:1px solid #2e3348;border-radius:16px;padding:24px}
+.login-label{font-size:13px;color:#7a80a0;font-weight:600;margin-bottom:10px}
+#pin-input{width:100%;background:#222536;border:1px solid #2e3348;border-radius:10px;color:#e8eaf0;padding:14px;font-size:20px;text-align:center;letter-spacing:6px;outline:none;transition:border-color .2s}
+#pin-input:focus{border-color:#4f8ef7}
+#pin-input.error{border-color:#e05555}
+.pin-error{color:#e05555;font-size:12px;margin-top:6px;text-align:center;display:none}
+.login-btn{width:100%;background:#4f8ef7;color:white;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;margin-top:14px;cursor:pointer;transition:background .2s}
+.login-btn:active{background:#3a7de8}
+.login-hint{margin-top:16px;font-size:11px;color:#3a3f58;text-align:center}
+
+/* APP */
+#app-screen{display:none;padding-bottom:80px}
+.header{background:#1a1d27;border-bottom:1px solid #2e3348;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-icon{width:32px;height:32px;background:linear-gradient(135deg,#4f8ef7,#7c5cbf);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.header-title{font-size:14px;font-weight:700}
+.header-right{display:flex;align-items:center;gap:8px}
+.refresh-btn{background:#222536;border:1px solid #2e3348;border-radius:8px;color:#7a80a0;padding:6px 10px;cursor:pointer;font-size:13px;transition:color .2s}
+.user-badge{border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700}
+.logout-btn{background:transparent;border:none;color:#7a80a0;cursor:pointer;font-size:18px;padding:4px}
+
+/* NAV */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2e3348;display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;padding:10px 4px 12px;text-align:center;cursor:pointer;color:#7a80a0;font-size:10px;font-weight:400;border-top:2px solid transparent;transition:all .2s}
+.nav-item.active{color:#4f8ef7;border-top-color:#4f8ef7;font-weight:700}
+.nav-icon{font-size:20px;line-height:1.3}
+
+/* PAGES */
+.page{display:none;padding:16px}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:#1a1d27;border:1px solid #2e3348;border-radius:12px;padding:14px;margin-bottom:10px}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#1a1d27;border:1px solid #2e3348;border-radius:12px;padding:14px;text-align:center}
+.stat-num{font-size:28px;font-weight:700}
+.stat-label{font-size:11px;color:#7a80a0;margin-top:4px}
+
+/* SECTION TITLE */
+.sec-title{font-size:12px;color:#7a80a0;font-weight:700;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.sec-title:first-child{margin-top:0}
+
+/* REQUEST CARD */
+.req-card{background:#1a1d27;border:1px solid #2e3348;border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;-webkit-user-select:none}
+.req-card:active{border-color:#4f8ef7;background:#1e2130}
+.req-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.req-title{font-weight:700;font-size:13px;flex:1;line-height:1.4}
+.req-meta{font-size:11px;color:#7a80a0;margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+
+/* BADGES */
+.badge{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;display:inline-block}
+.badge-red{background:rgba(224,85,85,.15);color:#e05555}
+.badge-yellow{background:rgba(240,180,41,.15);color:#f0b429}
+.badge-green{background:rgba(46,204,122,.15);color:#2ecc7a}
+.badge-blue{background:rgba(79,142,247,.15);color:#4f8ef7}
+.badge-purple{background:rgba(124,92,191,.15);color:#7c5cbf}
+
+/* FORM */
+.form-group{margin-bottom:12px}
+.form-label{font-size:12px;color:#7a80a0;font-weight:600;display:block;margin-bottom:5px}
+.form-input{width:100%;background:#222536;border:1px solid #2e3348;border-radius:8px;color:#e8eaf0;padding:10px 12px;font-size:13px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:#4f8ef7}
+textarea.form-input{min-height:70px;resize:vertical}
+
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:opacity .2s}
+.btn:active{opacity:.7}
+.btn-primary{background:#4f8ef7;color:white;width:100%;justify-content:center;padding:13px}
+.btn-green{background:#2ecc7a;color:white}
+.btn-ghost{background:#222536;color:#7a80a0;border:1px solid #2e3348}
+.btn-outline-green{background:rgba(46,204,122,.15);color:#2ecc7a;border:1px solid rgba(46,204,122,.3)}
+.btn-outline-blue{background:rgba(79,142,247,.15);color:#4f8ef7;border:1px solid rgba(79,142,247,.3)}
+.btn-outline-red{background:rgba(224,85,85,.15);color:#e05555;border:1px solid rgba(224,85,85,.3)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:6px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-ms-overflow-style:none;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid #2e3348;background:#222536;color:#7a80a0;transition:all .2s;flex-shrink:0}
+.filter-btn.active{background:#4f8ef7;color:white;border-color:#4f8ef7}
+.filter-btn:active{opacity:.7}
+
+/* MEETING SLOT */
+.meeting-slot{display:flex;align-items:center;gap:8px;background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.2);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.slot-time{background:rgba(79,142,247,.2);border-radius:6px;padding:4px 8px;color:#4f8ef7;font-size:11px;font-weight:700;min-width:44px;text-align:center;flex-shrink:0}
+.slot-info{flex:1}
+.slot-title{font-weight:600;font-size:12px}
+.slot-sub{font-size:10px;color:#7a80a0;margin-top:1px}
+.no-meetings{font-size:12px;color:#3a3f58;text-align:center;padding:8px 0}
+.empty-state{text-align:center;padding:32px 20px;color:#7a80a0;font-size:13px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:#1a1d27;border:1px solid #2e3348;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:#2e3348;border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:16px}
+.modal-row{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid #2e3348;font-size:13px}
+.modal-key{color:#7a80a0;min-width:100px}
+.modal-val{font-weight:600}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-actions .btn{flex:1;justify-content:center}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);color:white;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transition:all .3s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏛️</div>
+    <div class="login-title">میز معاون</div>
+    <div class="login-sub">سیستم مدیریت درخواست و زمان‌بندی</div>
+    <div class="login-card">
+      <div class="login-label">رمز ورود</div>
+      <input type="password" id="pin-input" placeholder="رمز عبور" autocomplete="off">
+      <div class="pin-error" id="pin-error">رمز اشتباه است</div>
+      <button class="login-btn" onclick="doLogin()">ورود</button>
+      <div class="login-hint">کارشناس: 1234 &nbsp;·&nbsp; مسئول دفتر: 5678 &nbsp;·&nbsp; معاون: 9999</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">🏛️</div>
+      <div class="header-title">میز معاون</div>
+    </div>
+    <div class="header-right">
+      <button class="refresh-btn" onclick="loadData()">🔄</button>
+      <div class="user-badge" id="user-badge"></div>
+      <button class="logout-btn" onclick="doLogout()">✕</button>
+    </div>
+  </div>
+
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="s-total" style="color:#4f8ef7">0</div><div class="stat-label">کل درخواست‌ها</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-urgent" style="color:#e05555">0</div><div class="stat-label">خیلی فوری</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-pending" style="color:#f0b429">0</div><div class="stat-label">در انتظار</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-today" style="color:#2ecc7a">0</div><div class="stat-label">جلسات امروز</div></div>
+    </div>
+    <div class="sec-title">⚡ خیلی فوری</div>
+    <div id="d-urgent"></div>
+    <div class="sec-title">✍️ نیاز به امضا</div>
+    <div id="d-sign"></div>
+    <div class="sec-title">🗓 جلسات امروز</div>
+    <div id="d-today"></div>
+  </div>
+
+  <div class="page" id="page-requests">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all',this)">همه</button>
+      <button class="filter-btn" onclick="setFilter('urgent',this)">خیلی فوری</button>
+      <button class="filter-btn" onclick="setFilter('pending',this)">در انتظار</button>
+      <button class="filter-btn" onclick="setFilter('sign',this)">امضا</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">انجام‌شده</button>
+    </div>
+    <div id="req-list"></div>
+  </div>
+
+  <div class="page" id="page-new">
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:16px">➕ ثبت درخواست جدید</div>
+      <div class="form-group">
+        <label class="form-label">اداره‌کل / واحد *</label>
+        <select id="f-dept" class="form-input">
+          <option value="">انتخاب کنید...</option>
+          <option>اداره‌کل ۱</option><option>اداره‌کل ۲</option><option>اداره‌کل ۳</option>
+          <option>اداره‌کل ۴</option><option>اداره‌کل ۵</option><option>اداره‌کل ۶</option>
+          <option>دفتر معاون</option><option>سایر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">موضوع *</label>
+        <input type="text" id="f-subject" class="form-input" placeholder="مثلاً: تأیید بودجه پروژه X">
+      </div>
+      <div class="form-group">
+        <label class="form-label">نوع درخواست *</label>
+        <select id="f-type" class="form-input">
+          <option value="">انتخاب کنید...</option>
+          <option>نیاز به امضا</option><option>نیاز به تصمیم</option>
+          <option>گزارش برای اطلاع</option><option>درخواست جلسه</option><option>سایر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">فوریت</label>
+        <select id="f-urgency" class="form-input">
+          <option>عادی</option><option>فوری</option><option>خیلی فوری</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">مهلت انجام</label>
+        <input type="text" id="f-deadline" class="form-input" placeholder="مثلاً: ۱۴۰۳/۰۵/۱۰">
+      </div>
+      <div class="form-group">
+        <label class="form-label">توضیح (اختیاری)</label>
+        <textarea id="f-desc" class="form-input" placeholder="جزئیات کوتاه..."></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitReq()">✅ ثبت درخواست</button>
+    </div>
+  </div>
+
+  <div class="page" id="page-calendar">
+    <div class="cal-header">
+      <div style="font-size:14px;font-weight:700">📅 زمان‌بندی جلسات</div>
+      <button class="btn btn-green btn-sm" onclick="openMeetingModal(null)">+ جلسه</button>
+    </div>
+    <div id="cal-view"></div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')"><div class="nav-icon">📊</div>داشبورد</div>
+    <div class="nav-item" id="nav-requests" onclick="showTab('requests')"><div class="nav-icon">📋</div>درخواست‌ها</div>
+    <div class="nav-item" id="nav-new" onclick="showTab('new')"><div class="nav-icon">➕</div>ثبت</div>
+    <div class="nav-item" id="nav-calendar" onclick="showTab('calendar')"><div class="nav-icon">📅</div>زمان‌بندی</div>
+  </div>
+</div>
+
+<!-- MODAL: Request Detail -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="md-subject"></div>
+    <div id="md-badges" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+    <div id="md-rows"></div>
+    <div class="modal-actions" id="md-actions"></div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:8px" onclick="closeModal('modal-detail')">بستن</button>
+  </div>
+</div>
+
+<!-- MODAL: New Meeting -->
+<div class="modal-overlay" id="modal-meeting">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📅 ثبت جلسه</div>
+    <div class="form-group"><label class="form-label">عنوان جلسه *</label><input type="text" id="m-title" class="form-input" placeholder="مثلاً: جلسه هماهنگی"></div>
+    <div class="form-group">
+      <label class="form-label">واحد</label>
+      <select id="m-dept" class="form-input">
+        <option value="">انتخاب...</option>
+        <option>اداره‌کل ۱</option><option>اداره‌کل ۲</option><option>اداره‌کل ۳</option>
+        <option>اداره‌کل ۴</option><option>اداره‌کل ۵</option><option>اداره‌کل ۶</option>
+        <option>دفتر معاون</option><option>سایر</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">تاریخ *</label><input type="date" id="m-date" class="form-input"></div>
+    <div class="form-group">
+      <label class="form-label">ساعت *</label>
+      <select id="m-time" class="form-input">
+        <option>۸:۰۰</option><option>۸:۳۰</option><option>۹:۰۰</option><option>۹:۳۰</option>
+        <option>۱۰:۰۰</option><option>۱۰:۳۰</option><option>۱۱:۰۰</option><option>۱۱:۳۰</option>
+        <option>۱۲:۰۰</option><option>۱۴:۰۰</option><option>۱۴:۳۰</option><option>۱۵:۰۰</option>
+        <option>۱۵:۳۰</option><option>۱۶:۰۰</option><option>۱۶:۳۰</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">مدت (دقیقه)</label>
+      <select id="m-dur" class="form-input"><option>۱۵</option><option>۳۰</option><option selected>۴۵</option><option>۶۰</option><option>۹۰</option><option>۱۲۰</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-meeting')">انصراف</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveMeeting()">ذخیره جلسه</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const USERS = {
+  '1234': {name:'کارشناس', role:'assistant', color:'#4f8ef7'},
+  '5678': {name:'مسئول دفتر', role:'secretary', color:'#2ecc7a'},
+  '9999': {name:'معاون', role:'deputy', color:'#f0b429'}
+};
+
+let currentUser = null;
+let currentFilter = 'all';
+let requests = [];
+let meetings = [];
+let detailId = null;
+
+const SAMPLE_REQS = [
+  {id:1,dept:'اداره‌کل ۱',subject:'تأیید بودجه فصل سوم',type:'نیاز به امضا',urgency:'خیلی فوری',desc:'بودجه باید تا پایان هفته تأیید شود',deadline:'۱۴۰۳/۰۴/۲۰',status:'pending',by:'کارشناس',date:'۱۴۰۳/۰۴/۱۲'},
+  {id:2,dept:'اداره‌کل ۳',subject:'گزارش عملکرد نیمه‌اول',type:'گزارش برای اطلاع',urgency:'عادی',desc:'',deadline:'۱۴۰۳/۰۴/۲۵',status:'pending',by:'کارشناس',date:'۱۴۰۳/۰۴/۱۳'},
+  {id:3,dept:'اداره‌کل ۵',subject:'درخواست جلسه هماهنگی',type:'درخواست جلسه',urgency:'فوری',desc:'هماهنگی پروژه مشترک با اداره‌کل ۲',deadline:'۱۴۰۳/۰۴/۱۸',status:'pending',by:'مسئول دفتر',date:'۱۴۰۳/۰۴/۱۳'},
+];
+
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+function nextDay(n) { const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().split('T')[0]; }
+
+const SAMPLE_MEETINGS = [
+  {id:1,title:'جلسه شورای معاونین',dept:'دفتر معاون',date:todayISO(),time:'۱۰:۰۰',dur:'۶۰',by:'مسئول دفتر'},
+  {id:2,title:'بررسی گزارش اداره‌کل ۱',dept:'اداره‌کل ۱',date:nextDay(1),time:'۹:۰۰',dur:'۳۰',by:'کارشناس'},
+];
+
+// STORAGE
+function saveData() {
+  try { localStorage.setItem('miz_reqs', JSON.stringify(requests)); localStorage.setItem('miz_meetings', JSON.stringify(meetings)); } catch(e){}
+}
+function loadData() {
+  try {
+    const r = localStorage.getItem('miz_reqs');
+    const m = localStorage.getItem('miz_meetings');
+    requests = r ? JSON.parse(r) : [...SAMPLE_REQS];
+    meetings = m ? JSON.parse(m) : [...SAMPLE_MEETINGS];
+  } catch(e) {
+    requests = [...SAMPLE_REQS];
+    meetings = [...SAMPLE_MEETINGS];
+  }
+  renderAll();
+  showToast('🔄 به‌روز شد', '#4f8ef7');
+}
+
+// LOGIN
+document.getElementById('pin-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+function doLogin() {
+  const pin = document.getElementById('pin-input').value.trim();
+  if (USERS[pin]) {
+    currentUser = USERS[pin];
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    const badge = document.getElementById('user-badge');
+    badge.textContent = currentUser.name;
+    badge.style.background = currentUser.color + '22';
+    badge.style.border = '1px solid ' + currentUser.color + '44';
+    badge.style.color = currentUser.color;
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-error').style.display = 'none';
+    document.getElementById('pin-input').classList.remove('error');
+    loadData();
+    // Auto-hide meeting button if deputy
+    if (currentUser.role === 'deputy') {
+      document.querySelectorAll('.btn-green.btn-sm').forEach(b => b.style.display='none');
+    }
+  } else {
+    document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-input').classList.add('error');
+    document.getElementById('pin-input').value = '';
+    setTimeout(() => {
+      document.getElementById('pin-error').style.display='none';
+      document.getElementById('pin-input').classList.remove('error');
+    }, 2000);
+  }
+}
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// TABS
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if (name==='dashboard') renderDashboard();
+  if (name==='requests') renderRequests();
+  if (name==='calendar') renderCalendar();
+}
+
+// BADGES
+function urgencyBadge(u) {
+  if (u==='خیلی فوری') return '<span class="badge badge-red">🔴 خیلی فوری</span>';
+  if (u==='فوری') return '<span class="badge badge-yellow">🟡 فوری</span>';
+  return '<span class="badge badge-green">🟢 عادی</span>';
+}
+function typeBadge(t) {
+  if (t==='نیاز به امضا') return '<span class="badge badge-purple">✍️ امضا</span>';
+  if (t==='نیاز به تصمیم') return '<span class="badge badge-blue">🔵 تصمیم</span>';
+  if (t==='درخواست جلسه') return '<span class="badge badge-yellow">🗓 جلسه</span>';
+  return '<span class="badge badge-green">📄 اطلاع</span>';
+}
+
+// REQ CARD HTML
+function reqCardHTML(r) {
+  return `<div class="req-card" onclick="openDetail(${r.id})" style="${r.status==='done'?'opacity:.6':''}">
+    <div class="req-top"><div class="req-title">${r.subject}</div>${urgencyBadge(r.urgency)}</div>
+    <div class="req-meta">
+      <span>🏢 ${r.dept}</span>${typeBadge(r.type)}
+      ${r.deadline?`<span>📅 ${r.deadline}</span>`:''}
+      <span>👤 ${r.by}</span>
+    </div>
+    ${r.status==='done'?`<div style="margin-top:8px"><span class="badge badge-green">✅ انجام‌شده ${r.doneBy?'توسط '+r.doneBy:''}</span></div>`:''}
+  </div>`;
+}
+
+// RENDER DASHBOARD
+function renderDashboard() {
+  const pending = requests.filter(r=>r.status==='pending');
+  const urgent = pending.filter(r=>r.urgency==='خیلی فوری');
+  const sign = pending.filter(r=>r.type==='نیاز به امضا');
+  const todayM = meetings.filter(m=>m.date===todayISO());
+
+  document.getElementById('s-total').textContent = requests.length;
+  document.getElementById('s-urgent').textContent = urgent.length;
+  document.getElementById('s-pending').textContent = pending.length;
+  document.getElementById('s-today').textContent = todayM.length;
+
+  document.getElementById('d-urgent').innerHTML = urgent.length
+    ? urgent.slice(0,3).map(reqCardHTML).join('')
+    : '<div class="empty-state">✅ موردی فوری نیست</div>';
+
+  document.getElementById('d-sign').innerHTML = sign.length
+    ? sign.slice(0,3).map(reqCardHTML).join('')
+    : '<div class="empty-state">موردی برای امضا نیست</div>';
+
+  document.getElementById('d-today').innerHTML = todayM.length
+    ? todayM.map(m=>`<div class="card" style="display:flex;align-items:center;gap:10px">
+        <div style="background:rgba(79,142,247,.15);border-radius:8px;padding:8px 10px;color:#4f8ef7;font-size:12px;font-weight:700;min-width:50px;text-align:center">${m.time}</div>
+        <div><div style="font-weight:700;font-size:13px">${m.title}</div><div style="font-size:11px;color:#7a80a0;margin-top:2px">${m.dept} · ${m.dur} دق · ${m.by}</div></div>
+      </div>`).join('')
+    : '<div class="empty-state">جلسه‌ای امروز ثبت نشده</div>';
+}
+
+// RENDER REQUESTS
+function renderRequests() {
+  let list = requests;
+  if (currentFilter==='urgent') list = requests.filter(r=>r.urgency==='خیلی فوری'&&r.status==='pending');
+  else if (currentFilter==='pending') list = requests.filter(r=>r.status==='pending');
+  else if (currentFilter==='sign') list = requests.filter(r=>r.type==='نیاز به امضا'&&r.status==='pending');
+  else if (currentFilter==='done') list = requests.filter(r=>r.status==='done');
+  document.getElementById('req-list').innerHTML = list.length
+    ? list.map(reqCardHTML).join('')
+    : '<div class="empty-state">موردی یافت نشد</div>';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRequests();
+}
+
+// RENDER CALENDAR
+function renderCalendar() {
+  const days = Array.from({length:5},(_,i)=>{
+    const d=new Date(); d.setDate(d.getDate()+i);
+    const names=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+    return {date:d.toISOString().split('T')[0], label:i===0?'امروز':names[d.getDay()], fa:d.toLocaleDateString('fa-IR')};
+  });
+  const canEdit = currentUser && currentUser.role !== 'deputy';
+  document.getElementById('cal-view').innerHTML = days.map(({date,label,fa})=>{
+    const dayM = meetings.filter(m=>m.date===date).sort((a,b)=>a.time.localeCompare(b.time));
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:700;font-size:13px">${label}</div>
+        <div style="font-size:11px;color:#7a80a0">${fa}</div>
+      </div>
+      ${dayM.length===0?'<div class="no-meetings">بدون جلسه</div>':dayM.map(m=>`
+        <div class="meeting-slot">
+          <div class="slot-time">${m.time}</div>
+          <div class="slot-info"><div class="slot-title">${m.title}</div><div class="slot-sub">${m.dept} · ${m.dur} دق · ${m.by}</div></div>
+          ${canEdit?`<button onclick="deleteMeeting(${m.id})" style="background:transparent;border:none;color:#e05555;cursor:pointer;font-size:16px;padding:2px">🗑</button>`:''}
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderAll() { renderDashboard(); renderRequests(); renderCalendar(); }
+
+// DETAIL MODAL
+function openDetail(id) {
+  const r = requests.find(x=>x.id===id);
+  if (!r) return;
+  detailId = id;
+  document.getElementById('md-subject').textContent = r.subject;
+  document.getElementById('md-badges').innerHTML = urgencyBadge(r.urgency) + ' ' + typeBadge(r.type);
+  document.getElementById('md-rows').innerHTML = [
+    ['🏢 اداره‌کل', r.dept],
+    ['📅 مهلت', r.deadline||'—'],
+    ['👤 ثبت‌کننده', r.by],
+    ['🗓 تاریخ ثبت', r.date],
+    r.desc && ['📝 توضیح', r.desc],
+  ].filter(Boolean).map(([k,v])=>`<div class="modal-row"><span class="modal-key">${k}</span><span class="modal-val">${v}</span></div>`).join('');
+
+  const canEdit = currentUser && currentUser.role !== 'deputy';
+  const canSched = currentUser && currentUser.role !== 'deputy';
+  document.getElementById('md-actions').innerHTML = r.status==='pending' ? `
+    ${canEdit?`<button class="btn btn-outline-green" onclick="markDone(${r.id})">✓ انجام شد</button>`:''}
+    ${canSched?`<button class="btn btn-outline-blue" onclick="openMeetingFromDetail(${r.id})">📅 وقت بده</button>`:''}
+    ${canEdit?`<button class="btn btn-outline-red btn-sm" onclick="deleteReq(${r.id})">🗑</button>`:''}
+  ` : `<span class="badge badge-green" style="padding:8px 16px">✅ انجام‌شده</span>`;
+
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function openMeetingFromDetail(id) {
+  const r = requests.find(x=>x.id===id);
+  closeModal('modal-detail');
+  openMeetingModal({title:r.subject, dept:r.dept});
+}
+
+// ACTIONS
+function markDone(id) {
+  requests = requests.map(r=>r.id===id?{...r,status:'done',doneBy:currentUser.name}:r);
+  saveData(); closeModal('modal-detail'); renderAll(); showToast('✅ انجام شد');
+}
+function deleteReq(id) {
+  if (!confirm('حذف شود؟')) return;
+  requests = requests.filter(r=>r.id!==id);
+  saveData(); closeModal('modal-detail'); renderAll(); showToast('🗑 حذف شد','#e05555');
+}
+
+function submitReq() {
+  const dept=document.getElementById('f-dept').value;
+  const subject=document.getElementById('f-subject').value.trim();
+  const type=document.getElementById('f-type').value;
+  if (!dept||!subject||!type) { showToast('فیلدهای اجباری را پر کنید','#e05555'); return; }
+  const req = {
+    id: Date.now(), dept, subject, type,
+    urgency: document.getElementById('f-urgency').value,
+    deadline: document.getElementById('f-deadline').value,
+    desc: document.getElementById('f-desc').value,
+    status:'pending', by:currentUser.name,
+    date: new Date().toLocaleDateString('fa-IR')
+  };
+  requests.unshift(req);
+  saveData();
+  ['f-dept','f-subject','f-type','f-deadline','f-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-urgency').value='عادی';
+  showToast('✅ درخواست ثبت شد');
+  showTab('requests');
+}
+
+// MEETINGS
+function openMeetingModal(prefill) {
+  if (currentUser && currentUser.role==='deputy') return;
+  document.getElementById('m-title').value = prefill?.title||'';
+  document.getElementById('m-dept').value = prefill?.dept||'';
+  document.getElementById('m-date').value = todayISO();
+  document.getElementById('modal-meeting').classList.add('open');
+}
+function saveMeeting() {
+  const title=document.getElementById('m-title').value.trim();
+  const date=document.getElementById('m-date').value;
+  const time=document.getElementById('m-time').value;
+  if (!title||!date) { showToast('فیلدهای اجباری را پر کنید','#e05555'); return; }
+  meetings.push({id:Date.now(),title,dept:document.getElementById('m-dept').value,date,time,dur:document.getElementById('m-dur').value,by:currentUser.name});
+  saveData(); closeModal('modal-meeting'); renderCalendar(); showToast('📅 جلسه ثبت شد');
+}
+function deleteMeeting(id) {
+  if (!confirm('حذف شود؟')) return;
+  meetings = meetings.filter(m=>m.id!==id);
+  saveData(); renderCalendar(); showToast('🗑 حذف شد','#e05555');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// TOAST
+function showToast(msg, color='#2ecc7a') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=color;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// Init with sample data
+requests = [...SAMPLE_REQS];
+meetings = [...SAMPLE_MEETINGS];
+</script>
+</body>
+</html>
